@@ -13,7 +13,7 @@ for i=1:1
 
     y=yn+randn(N,1)*.1;
 
- %     [theta]=sib_oe(u,y,2,2,1); %98 %60
+      [theta]=sib_oe(u,y,2,2,1); %98 %60
 
 % %%% OE 71     48
 %   dat=iddata(y,u,1);
