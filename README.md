@@ -1,7 +1,8 @@
-sib
-===
+sib - System Identification Toolbox 
+====================================
 
-System Identification Toolbox (Slow is Better)
+Slow is Better
+--------------
 
 Este é um toolbox para Matlab para identificação de sistemas dinâmicos.
 
