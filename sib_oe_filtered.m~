@@ -1,7 +1,7 @@
 function [theta,estavel]=sib_oe_filtered(u,y,na,nb,nz);
 %
 
-FF=[.1];
+FF=[.1 .2 .3 .4 .5 .6 .7 .8 .9];
 
 [thetai] = sib_arx(u,y,na,nb,nz);
 
@@ -17,16 +17,16 @@ for i=1:length(FF)
 
     %Estimate with filtered data
 
-    [theta2] = sib_oe_gradient2(uf,yf,theta,nz,nb) ;
-%    [thetaf,J] = sib_oe_hessian(uf,yf,theta2,2000,nz,nb);
-thetaf=theta2;
+    [theta2] = sib_oe_gradient(uf,yf,theta,nz,nb) ;
+    [thetaf,J] = sib_oe_hessian(uf,yf,theta2,2000,nz,nb);
+
 
     %Test if the model is stable
     if isnan(thetaf(1))
         theta=thetai;
         estavel(i)=1;
         
-    elseif max(abs(roots([1;thetaf(nb+1:na+nb)])))>1
+    elseif max(abs(roots([1;thetaf(4:na+)])))>1
         theta=thetai;
         estavel(i)=1;
     else
@@ -38,8 +38,8 @@ end
 
 
 %Estimate with real data
-[thetaf] = sib_oe_gradient2(u,y,theta,nz,nb) ;
-%[theta,J] = sib_oe_hessian(u,y,thetaf,2000,nz,nb);
+[thetaf] = sib_oe_gradient(u,y,theta,nz,nb) ;
+[theta,J] = sib_oe_hessian(u,y,thetaf,2000,nz,nb);
 
-theta=thetaf;
+
 

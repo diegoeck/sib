@@ -8,6 +8,6 @@ for i=1:NN
         
     teta=teta+passo*inv(H)*g;
     
-    disp([i J passo])    
+    %disp([i J passo])    
     
 end
