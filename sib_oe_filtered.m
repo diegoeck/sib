@@ -17,7 +17,7 @@ for i=1:length(FF)
 
     %Estimate with filtered data
 
-    [theta2] = sib_oe_gradient2(uf,yf,theta,nz,nb) ;
+    [theta2] = sib_oe_conjugate(uf,yf,theta,nz,nb) ;
 %    [thetaf,J] = sib_oe_hessian(uf,yf,theta2,2000,nz,nb);
 thetaf=theta2;
 
@@ -38,8 +38,8 @@ end
 
 
 %Estimate with real data
-[thetaf] = sib_oe_gradient2(u,y,theta,nz,nb) ;
-%[theta,J] = sib_oe_hessian(u,y,thetaf,2000,nz,nb);
+[thetaf] = sib_oe_conjugate(u,y,theta,nz,nb) ;
+[theta,J] = sib_oe_hessian(u,y,thetaf,2000,nz,nb);
 
-theta=thetaf;
+%theta=thetaf;
 
