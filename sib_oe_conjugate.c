@@ -1,3 +1,5 @@
+#include <stdint.h>
+typedef uint16_t char16_t;
 #include "mex.h"
 #include <math.h>
 #include <string.h>
@@ -352,7 +354,6 @@ for(j=0;j<1000;j++)
         if (J2[0]>J1[0])
         {
             passo=passo*0.99;
-                memcpy(tetafim,tetatemp,sizeof(double) *dteta);
 
         }else{   
             passo=passo*1.01;

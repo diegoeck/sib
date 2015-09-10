@@ -1,3 +1,5 @@
+#include <stdint.h>
+typedef uint16_t char16_t;
 #include "mex.h"
 #include <math.h>
 #include <string.h>
