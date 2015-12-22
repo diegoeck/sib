@@ -8,5 +8,5 @@ Before that, some files should be compiled, since they were written in C.
 Commands:
 
 * mex sib_oe_gradient.c
-* mex sib_oe_gradient2.c
+* mex sib_oe_conjugate.c
 
