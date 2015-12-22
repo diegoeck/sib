@@ -4,8 +4,8 @@ sib - System Identification Toolbox
 Slow is Better
 --------------
 
-Este é um toolbox para Matlab para identificação de sistemas dinâmicos.
+This is a Matlab toolbox for parameter identification of dynamic systems.
 
-O foco do projeto é em encontrar um bom modelo para o sistema, e não um algoritmo rápido.
+The focus of the project is to obtain good models to the system, not fast algorithms.
 
-Por isso o pacote também é conhecido como Slow is Better (SIB).
+The toolbox is also known as Slow is Better (sib).
