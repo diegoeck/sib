@@ -39,7 +39,7 @@ end
 
 %Estimate with real data
 [thetaf] = sib_oe_conjugate(u,y,theta,nz,nb) ;
-[theta,J] = sib_oe_hessian(u,y,thetaf,2000,nz,nb);
+[theta,J] = sib_oe_hessian(u,y,thetaf,50,nz,nb);
 
 %theta=thetaf;
 
