@@ -1,12 +1,12 @@
 INSTALLATION
 ============
 
-Basta adicionar a pasta com os arquivos no *patch*.
+The files should be added to the *path* of Matlab. 
 
-Contudo, antes disso é preciso compilar os arquivos em C.
+Before that, some files should be compiled, since they were written in C.
 
-Comandos:
+Commands:
 
 * mex sib_oe_gradient.c
-* mex sib_oe_gradient2.c
+* mex sib_oe_conjugate.c
 
