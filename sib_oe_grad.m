@@ -13,14 +13,20 @@ J=mean(e.^2);
 g=zeros(1,M);
 F=[];
 
+
+f=filter(1,A,u);
 for i=1:nb
-    f=filter([zeros(nz,1); zeros(i-1,1) ;1 ],A,u); 
-    F=[F f] ;  
+    F=[F [zeros(nz,1); zeros(i-1,1);f(1:end-nz-i+1)]]; 
 end
 
+
+
+
+%f=filter([0; zeros(i-1,1) ;1 ],A,yc);
+f=filter([1 ],A,yc);
+
 for i=1:(length(teta)-nb)
-    f=filter([0; zeros(i-1,1) ;1 ],A,yc); 
-    F=[F -f] ;  
+    F=[F [0; zeros(i-1,1); -f(1:end-i)] ];
 end
 
 g=(F'*e)/N;

@@ -1,19 +1,20 @@
 
 clc
 
-N=500;
+N=1000;
 u=randn(N,1);
-G=tf(zpk([0.9 ],[.85 .95],1,1));
+G=tf([1],[1 -0.9],1);
 yn=lsim(G,u);
 
 T=[];
 E=[];
 
-for i=1:1
+tic
+for i=1:1000
 
-    y=yn+randn(N,1)*.1;
+    y=yn+randn(N,1);
 
-      [theta]=sib_oe(u,y,2,2,1); %98 %60
+      [theta]=sib_sm(u,y,1,1,0); %98 %60
 
 % %%% OE 71     48
 %   dat=iddata(y,u,1);
@@ -26,10 +27,12 @@ for i=1:1
 
     T=[T  theta];
 
-    figure(1)
-    sib_plota(T,3)
+    %figure(1)
+    %sib_plota(T,3)
 
 end
+
+toc
 
  
 figure(2)

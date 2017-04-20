@@ -14,7 +14,7 @@ for i=1:na
     
 end
 
-theta=inv(phi'*phi)*phi'*y;
+theta=(phi'*phi)\(phi'*y);
 
 
 
