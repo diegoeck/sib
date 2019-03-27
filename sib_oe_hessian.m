@@ -5,9 +5,21 @@ for i=1:NN
     [yc,g,J,H] = sib_oe_grad(u,y,teta,nz,nb);
 
     passo=i/NN;
-        
-    teta=teta+passo*inv(H)*g;
     
-    disp([i J passo])    
+    q=H\g;
+    
+    teta=teta-passo*q;
+    
+    if mod(i,10)==0
+        k=floor(i/100);
+        fprintf('\r %1.10f %1.10f ',J,passo)
+        for j=1:k
+            fprintf('#')
+        end
+        for j=1:(20-k)
+            fprintf('-')
+        end
+    end
     
 end
+

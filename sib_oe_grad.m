@@ -7,7 +7,7 @@ B=[zeros(nz,1); teta(1:nb)];
 A=[1; teta(nb+1:end)];
 
 yc=filter(B,A,u); 
-e=y-yc;
+e=yc-y;
 J=mean(e.^2);
 
 g=zeros(1,M);
