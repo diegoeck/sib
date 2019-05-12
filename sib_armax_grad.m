@@ -1,4 +1,11 @@
-function [yc,g,J,H] = sib_armax_grad(u,y,teta,nz,na,nb)
+function [yc,g,J,H] = sib_armax_grad(teta,P)
+
+u=P.u;
+y=P.y;
+nz=P.nz;
+na=P.na;
+nb=P.nb;
+
 
 N=length(u);
 M=length(teta);
