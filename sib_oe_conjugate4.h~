@@ -1,0 +1,35 @@
+#ifndef OE_H
+#define OE_H
+
+
+#include <stdint.h>
+typedef uint16_t char16_t;
+#include "mex.h"
+#include <math.h>
+#include <string.h>
+#include <float.h>
+#include <sib_basic.h>
+#include <sib_optimize.h>
+
+struct dados
+{
+    double *u;
+    double *y;
+};
+
+struct model
+{
+    double *teta;
+    int dteta;
+    int num;
+    int delay;
+};
+
+static struct dados datas;
+static struct dados datas;
+
+
+void cost(double* teta, int dteta, int delay, int dnum, double* u, int du,double* ym, double* J);
+void grad(double* teta, int dteta, int delay, int dnum, double* u, int du,double* ym, double* J,double* gra);
+
+#endif

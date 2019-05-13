@@ -14,7 +14,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
      * 27 89 51
      * 18 60 32
      */
-    double A[4] = {1, 2, 3, 4};
+    double A[4] = {1, 0, 0, 1};
     double b[2] = {5, 6};
 
     long N = 2;

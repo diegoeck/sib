@@ -36,6 +36,7 @@ H=zeros(M,M);
 for j=1:N
     H=H+F(j,:)'*F(j,:);
 end
+H
 
 H=H/N;
 

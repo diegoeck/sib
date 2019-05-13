@@ -7,13 +7,17 @@ yi=filter([0 prod(1-polos)],poly(polos),u);
 T=[];
 for i=1:1
 
-vi=randn(1000,1)*0.000001;
+vi=randn(1000,1)*0.1;
 y=yi+vi;
 
+tao=sib_arx(u,y,3,2,0);
+ta=tao*0.9;
+
 tic()
-[t] = sib_oe(u,y,3,1,1) 
+[t] = sib_oe_conjugate5(u,y,tao,0,2) 
 toc()
 T=[T t];
+
 
 end
 
@@ -24,10 +28,12 @@ plot(T(3,:),T(4,:),'o')
 
 
 figure(1)
-Q=2
-G=tf(T(1:2,Q)',[1 T(3:5,Q)'],1);
+Q=60
+G=tf(T(1,Q),[1 T(2:4,Q)'],1);
 step(G);
 hold on
-G1=tf(T(1:2,1)',[1 T(3:5,1)'],1);
+G1=tf(T(1,1),[1 T(2:4,1)'],1);
+step(G1);
+G1=tf(T(1,1),[1 T(2:4,1)'],1);
 step(G1);
 hold off
