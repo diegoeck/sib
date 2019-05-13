@@ -1,7 +1,14 @@
-function [theta,estavel]=sib_oe_filtered(u,y,na,nb,nz);
+function [theta, m, estavel] = sib_oe_filtered(u, y, na, nb, nz);
+%  [theta, m] = sib_oe_filtered(u, y, nf, nb, nz)
+%
+%  Prediciton error method with OE structure
+%
+%         B(z)          
+%  y(t) = ---- u(t) + e(t) 
+%         F(z)        
 %
 
-FF=[.1];
+FF=[.1 .2 .3 .4 .5 .6 .7 .8 .9];
 
 [thetai] = sib_arx(u,y,na,nb,nz);
 
@@ -38,5 +45,10 @@ end
 %Estimate with real data
 [thetaf] = sib_oe_c(u,y,theta,nb,nz) ;
 
-%theta=thetaf;
+m.A=1;
+m.B=[zeros(nz,1); theta2(1:nb)];
+m.C=1;
+m.D=1;
+m.F=[1; theta2(nb+1:end)];
+
 

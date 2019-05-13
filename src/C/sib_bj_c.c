@@ -155,7 +155,7 @@ void grad(double* teta, double* J)
                 {
                     if( (i>=j) & (i>=k) ) 
                     {
-                        H[j][k]+=(y[i-k])*(y[i-j]);
+                        H[j][k]+=(y1[i-k])*(y1[i-j]);
                         H[k][j]=H[j][k];
                     }
                 }
@@ -163,7 +163,7 @@ void grad(double* teta, double* J)
                 {
                     if( (i>=j) & (i>=k) ) 
                     {
-                        H[j][k]+=(y[i-j])*(y2[i-k]);
+                        H[j][k]+=(y1[i-j])*(y2[i-k]);
                         H[k][j]=H[j][k];
                     }
                 }
@@ -171,7 +171,7 @@ void grad(double* teta, double* J)
                 {
                     if( (i>=j) & (i>=k) ) 
                     {
-                        H[j][k]+=(y[i-j])*(y3[i-k]);
+                        H[j][k]+=(y1[i-j])*(y3[i-k]);
                         H[k][j]=H[j][k];
                     }
                 }
@@ -201,21 +201,13 @@ void grad(double* teta, double* J)
             }
     
             
-            for (j = dB+d; j < dB+dA; j++)
+            for (j = dB+dA; j < dB+dA+dC; j++)
             {
-                for (k = dB; k < dB+dA; k++)
-                {
-                    if( (i>=j) & (i>=k) ) 
-                    {
-                     H[j][k]+=(y2[i-j])*(y2[i-k]);
-                     H[k][j]=H[j][k];
-                    }
-                }
                 for (k = dB+dA; k < dB+dA+dC; k++)
                 {
                     if( (i>=j) & (i>=k) ) 
                     {
-                     H[j][k]+=(y2[i-j])*(y3[i-k]);
+                     H[j][k]+=(y3[i-j])*(y3[i-k]);
                      H[k][j]=H[j][k];
                     }
                 }
@@ -224,7 +216,7 @@ void grad(double* teta, double* J)
     
         
         }
-*/
+
     }
     
     free(y);
@@ -270,8 +262,8 @@ void mexFunction(int nlhs, mxArray *plhs[ ],int nrhs, const mxArray *prhs[ ])
 
     
     sib_steepest(tetafim);
-    //memcpy(teta,tetafim,sizeof(double) *dteta);
-    //sib_newton(tetafim);
+    memcpy(teta,tetafim,sizeof(double) *dteta);
+    sib_newton(tetafim);
 } 
 
         
