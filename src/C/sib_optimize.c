@@ -36,11 +36,16 @@ void sib_steepest(double* tetafim)
     for(i=0; i<100; i++)
     {
 
+        
+
         for(j=0; j<100; j++)
         {   
             mode=1;
             grad(tetafim,J1);
-    
+            
+            //mexPrintf("T %1.10f %1.10f %1.10f %1.10f\n",tetafim[0],tetafim[1],tetafim[2],tetafim[3]);
+            //mexPrintf("G %1.10f %1.10f %1.10f %1.10f\n",gra[0],gra[1],gra[2],gra[3]);
+
             if((i==0)&(j==0))
             {
                 memcpy(dir,gra,sizeof(double)*dteta);
@@ -82,7 +87,7 @@ void sib_steepest(double* tetafim)
         {
             mexPrintf("-");
         }
-        mexPrintf(" %2d%% %1.10f %1.10f \n",i,J1[0],passo);
+        mexPrintf(" %02d%% %1.10f %1.10f \n",i,J1[0],passo);
         
         if (utIsInterruptPending()) {       
             mexPrintf("Ctrl-C Detected. END\n\n");
@@ -112,14 +117,17 @@ void sib_newton(double* tetafim)
 
     int i,j,k;
     double *tetatemp;
-    double passo;
+    double passo = 0.00001;
     double J1[1];
+    double J2[1];
 
     long Ns = (long)dteta;
     long Ms = 1;
 
     long *ipiv;
     long info;
+    
+    int erro=0;
 
     ipiv=malloc((dteta)*sizeof(long));
 
@@ -128,7 +136,7 @@ void sib_newton(double* tetafim)
     memcpy(tetafim,teta,sizeof(double) *dteta);
 
 
-    for(i=0;i<100;i++)
+    for(i=0; i<100; i++)
     {
         mode=2;
         grad(tetafim,J1);
@@ -156,8 +164,37 @@ void sib_newton(double* tetafim)
             tetatemp[k] = tetafim[k] - gra[k]*i/100;
         }
     
-        memcpy(tetafim,tetatemp,sizeof(double) *dteta);
+
+        for (j = 0; j < 10; j++)
+        {
     
+            mode=0;
+            grad(tetatemp,J2);
+
+            if (J2[0]>J1[0])
+            {
+                //mexPrintf("ERRO \n");
+                for (k = 0; k < dteta; k++)
+                {
+                    tetatemp[k] = (tetatemp[k]+tetafim[k])/2;
+                }
+
+            }else{   
+                
+                memcpy(tetafim,tetatemp,sizeof(double) *dteta);
+                break;
+                
+            }
+        }
+
+        if (j==10)
+        {
+            break;
+        }
+
+        
+        
+        
         
         mexPrintf("N: ");
         for (k = 0; k < (int)floor(i/5); k++)
@@ -168,7 +205,7 @@ void sib_newton(double* tetafim)
         {
             mexPrintf("-");
         }
-        mexPrintf(" %02d%% %1.10f \n",i,J1[0]);
+        mexPrintf(" %02d%% %1.10f %1.10f \n", i, J1[0], ((float)i)/100.0);
         
         
         
@@ -181,6 +218,7 @@ void sib_newton(double* tetafim)
         
     }
 
+    free(ipiv);
     free(tetatemp);
 
 }

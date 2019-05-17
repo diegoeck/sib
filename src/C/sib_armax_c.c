@@ -27,7 +27,7 @@ void grad(double* teta, double* J)
     // Calcula o gradiente da estrutura OE e o custo atual
     double *e;
     double *A;
-    double *y;
+    //double *y;
     double *y0;
     double *y1;
     double *y2;
@@ -62,7 +62,7 @@ void grad(double* teta, double* J)
     
     A=malloc((dA+dC+1)*sizeof(double));
     A[0]=1;
-    for (k = 0; k < dA+dC+1; k++)
+    for (k = 0; k < dA+dC; k++)
     {
         A[k+1]=teta[dB+k];
     }
@@ -219,9 +219,11 @@ void grad(double* teta, double* J)
 
     }
     
-    free(y);
-    free(y2);
+    //free(y);
     free(y0);
+    free(y1);
+    free(y2);
+    free(y3);
     free(e);
 
 }
@@ -258,12 +260,15 @@ void mexFunction(int nlhs, mxArray *plhs[ ],int nrhs, const mxArray *prhs[ ])
     plhs[0] = mxCreateDoubleMatrix(dteta,1,mxREAL);
     tetafim = mxGetPr(plhs[0]);
 
-    mexPrintf(" %d %d %d %d  \n",dteta,dA,dB,dC);
+    //mexPrintf(" %d %d %d %d  \n",dteta,dA,dB,dC);
 
     
     sib_steepest(tetafim);
     memcpy(teta,tetafim,sizeof(double) *dteta);
     sib_newton(tetafim);
+    
+    free(gra);
+    free(H);
 } 
 
         
