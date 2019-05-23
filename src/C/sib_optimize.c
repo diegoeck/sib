@@ -121,19 +121,19 @@ void sib_newton(double* tetafim)
     double J1[1];
     double J2[1];
 
-    #ifdef _WIN64
-    long long Ns = (long long)dteta;
-    long long Ms = 1;
-    long long *ipiv;
-    ipiv=malloc((dteta)*sizeof(long long));
-    long long info;
-    #else
-    long Ns = (long)dteta;
-    long Ms = 1;
-    long *ipiv;
+    //#ifdef _WIN64
+    //long long Ns = (long long)dteta;
+    //long long Ms = 1;
+    //long long *ipiv;
+    //ipiv=malloc((dteta)*sizeof(long long));
+    //long long info;
+    //#else
+    ptrdiff_t Ns = dteta;
+    ptrdiff_t Ms = 1;
+    ptrdiff_t *ipiv;
     ipiv=malloc((dteta)*sizeof(long));
-    long info;
-    #endif
+    ptrdiff_t info;
+    //#endif
     
 
     
