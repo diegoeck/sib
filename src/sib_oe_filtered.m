@@ -36,7 +36,7 @@ end
 
 
 %Estimate with real data
-theta2 = sib_oe_c(u,y,theta,nb,nz) ;
+theta2 = sib_oe_c(u,y,theta1,nb,nz) ;
 
 m.A = 1;
 m.B = [ zeros(nz,1); theta2(1:nb) ];
