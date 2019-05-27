@@ -132,7 +132,7 @@ void sib_newton(double* tetafim)
     ptrdiff_t Ms = 1;
     ptrdiff_t *ipiv;
     ipiv=malloc((dteta)*sizeof(long));
-    ptrdiff_t info;
+    ptrdiff_t info = 0;
     //#endif
     
 
