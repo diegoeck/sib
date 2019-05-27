@@ -38,6 +38,11 @@ void grad(double* teta, double* J)
     double *y6;
     double *y7;
 
+    double *pB;
+    double *pA;
+    double *pC;
+    double *pD;
+    
     int i,j,k;
 
     y0=malloc((du)*sizeof(double));
@@ -51,35 +56,46 @@ void grad(double* teta, double* J)
     e=malloc((du)*sizeof(double));
 
     
-    //mexPrintf(" %f %f %f %f \n",teta[0],teta[1],teta[2],teta[2]);
     
-    A=malloc((dB+dA)*sizeof(double));
-    for (k = 0; k < dB+dA; k++)
+    pB=malloc( (dB)*sizeof(double) );
+    pA=malloc( (dA+1)*sizeof(double) );
+    pC=malloc( (dC+1)*sizeof(double) );
+    pD=malloc( (dD+1)*sizeof(double) );
+    double p1[1]={1};
+    double p1n[1]={-1};
+    
+    for (k = 0; k < dB; k++)
     {
-        A[k]=teta[k];
+        pB[k]=teta[k];
     }
     
-    filtra(A, dB, dA, delay, u, du, y0); 
-    free(A);
+    pA[0] = 1;
+    for (k = 0; k < dA; k++)
+    {
+        pA[k+1]=teta[dB+k];
+    }
+
+    pC[0] = 1;
+    for (k = 0; k < dC; k++)
+    {
+        pC[k+1]=teta[dB+dA+k];
+    }
+
+    pD[0] = 1;
+    for (k = 0; k < dD; k++)
+    {
+        pD[k+1]=teta[dB+dA+dC+k];
+    }
     
+        
+    filter(pB, pA, dB, dA+1, delay, u, du, y0); 
+
     for (k = 0; k < du; k++)
     {
         y0[k]-=ym[k];
     }
     
-    A=malloc((dC+dD+1)*sizeof(double));
-    A[0]=1;
-    for (k = 0; k < dD; k++)
-    {
-        A[k+1]=teta[dB+dA+dC+k];
-    }
-    for (k = 0; k < dC; k++)
-    {
-        A[k+1+dD]=teta[dB+dA+k];
-    }
-
-    filtra(A, dD+1, dC, 0, y0, du, y1);    
-    free(A);
+    filter(pD, pC, dD+1, dC+1, 0, y0, du, y1); 
     
     J[0]=0;
     for (k = 0; k < du; k++)
@@ -97,31 +113,10 @@ void grad(double* teta, double* J)
         {
             gra[j]=0;
         }
-      
+              
         // Calcula gradiente com relacao a B
-        A=malloc((dC+dD+1)*sizeof(double));
-        A[0]=1;
-        for (k = 0; k < dD; k++)
-        {
-            A[k+1]=teta[dB+dA+dC+k];
-        }
-        for (k = 0; k < dC; k++)
-        {
-            A[k+1+dD]=teta[dB+dA+k];
-        }
-        filtra(A, dD+1, dC, 0, u, du, y1);    
-        free(A);
-
-        A=malloc((1+dA)*sizeof(double));
-        A[0]=1;
-        for (k = 0; k < dA; k++)
-        {
-            A[k+1]=teta[dB+k];
-        }
-        filtra(A, 1, dA, delay, y1, du, y2);
-        free(A);
-        
-
+        filter(pD, pC, dD+1, dC+1, 0, u, du, y1);    
+        filter(p1, pA, 1, dA+1, 0, y1, du, y2);    
         for (j = 0; j < dB; j++)
         {
             gra[j]=0;
@@ -132,25 +127,8 @@ void grad(double* teta, double* J)
         }
 
         // Calcula gradiente com relacao a A
-        A=malloc((dB+dA)*sizeof(double));
-        for (k = 0; k < dB+dA; k++)
-        {
-            A[k]=teta[k];
-        }
-        
-        filtra(A, dB, dA, delay, y1, du, y3);    
-        free(A);
-
-        A=malloc((1+dA)*sizeof(double));
-        A[0]=-1;
-        for (k = 0; k < dA; k++)
-        {
-            A[k+1]=teta[dB+k];
-        }
-        filtra(A, 1, dA, 1, y3, du, y4);
-        free(A);
-        
-
+        filter(pB, pA, dB, dA+1, delay, y1, du, y3);    
+        filter(p1n, pA, 1, dA+1, 1, y3, du, y4);    
         for (j = 0; j < dA; j++)
         {
             gra[dB+j]=0;
@@ -162,27 +140,8 @@ void grad(double* teta, double* J)
         
         
         // Calcula gradiente com relacao a C
-        A=malloc((dC+dD+1)*sizeof(double));
-        A[0]=1;
-        for (k = 0; k < dD; k++)
-        {
-            A[k+1]=teta[dB+dA+dC+k];
-        }
-        for (k = 0; k < dC; k++)
-        {
-            A[k+1+dD]=teta[dB+dA+k];
-        }
-        filtra(A, dD+1, dC, 0, y0, du, y5);    
-        free(A);
-        
-        A=malloc((dC+1)*sizeof(double));
-        A[0]=-1;
-        for (k = 0; k < dC; k++)
-        {
-            A[k+1]=teta[dB+dA+k];
-        }
-        filtra(A, 1, dC, 1, y5, du, y6);    
-        free(A);
+        filter(pD, pC, dD+1, dC+1, 0, y0, du, y5);    
+        filter(p1n, pC, 1, dC+1, 1, y5, du, y6);    
         
         for (j = 0; j < dC; j++)
         {
@@ -194,15 +153,7 @@ void grad(double* teta, double* J)
         }
         
         // Calcula gradiente com relacao a D
-        A=malloc((dC+1)*sizeof(double));
-        A[0]=1;
-        for (k = 0; k < dC; k++)
-        {
-            A[k+1]=teta[dB+dA+k];
-        }
-        filtra(A, 1, dC, 1, y0, du, y7);    
-        free(A);
-        
+        filter(p1, pC, 1, dC+1, 1, y0, du, y7);    
         for (j = 0; j < dD; j++)
         {
             gra[dA+dB+dC+j]=0;
@@ -214,15 +165,12 @@ void grad(double* teta, double* J)
 
     }
     
-    //mexPrintf("Teta %1.10f %1.10f %1.10f %1.10f\n",gra[0],gra[1],gra[2],gra[3]);
-
-    
     if(mode==2)
     {
 
         for (j = 0; j < dteta; j++)
         {
-            for (k = j; k < dteta; k++)
+            for (k = 0; k < dteta; k++)
             {
                 H[j][k]=0;
             }
@@ -349,6 +297,10 @@ void grad(double* teta, double* J)
     free(y7);
     free(e);
 
+    free(pA);
+    free(pB);
+    free(pC);
+    free(pD);
 }
 
 
