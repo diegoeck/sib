@@ -20,8 +20,8 @@ function [theta4, m] = sib_bj(u, y, nf, nb, nc, nd, nz)
 
 theta0 = sib_arx(u, y, nf, nb, nz);
 theta1 = [ theta0; zeros(nc,1) ];
-theta2 = sib_armax_c(u, y, theta1, nf, nb, nc, nz);
-%theta2 = theta1;
+%theta2 = sib_armax_c(u, y, theta1, nf, nb, nc, nz);
+theta2 = theta1;
 
 if (nd>nf)
     D=[ theta2(nb+1:nb+nf); zeros(nd-nf,1) ];

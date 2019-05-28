@@ -139,83 +139,82 @@ void grad(double* teta, double* J)
     if(mode==2)
     {
 
+        
+    
         for (j = 0; j < dteta; j++)
         {
-            for (k = j; k < dteta; k++)
+            for (k = 0; k < dteta; k++)
             {
                 H[j][k]=0;
             }
         }
         
-        for (i = 0; i < du; i++)
-        {            
-            for (j = 0; j < dB; j++)
-            {
-                for (k = j; k < dB; k++)
-                {
-                    if( (i>=j) & (i>=k) ) 
-                    {
-                        H[j][k]+=(y1[i-k])*(y1[i-j]);
-                        H[k][j]=H[j][k];
-                    }
-                }
-                for (k = dB; k < dB+dA; k++)
-                {
-                    if( (i>=j) & (i>=k) ) 
-                    {
-                        H[j][k]+=(y1[i-j])*(y2[i-k]);
-                        H[k][j]=H[j][k];
-                    }
-                }
-                for (k = dB+dA; k < dB+dA+dC; k++)
-                {
-                    if( (i>=j) & (i>=k) ) 
-                    {
-                        H[j][k]+=(y1[i-j])*(y3[i-k]);
-                        H[k][j]=H[j][k];
-                    }
-                }
-
-            }
+         
         
-        
-            for (j = dB; j < dB+dA; j++)
+        for (j = 0; j < dB; j++)
+        {
+            for (k = j; k < dB; k++)
             {
-                for (k = dB; k < dB+dA; k++)
-                {
-                    if( (i>=j) & (i>=k) ) 
+                for (i = 0; i < du; i++)
+                {   
+                    if ((i>=j)&(i>=k))
                     {
-                     H[j][k]+=(y2[i-j])*(y2[i-k]);
-                     H[k][j]=H[j][k];
+                        H[j][k]+=y1[i-j]*y1[i-k];
                     }
                 }
-                for (k = dB+dA; k < dB+dA+dC; k++)
-                {
-                    if( (i>=j) & (i>=k) ) 
-                    {
-                     H[j][k]+=(y2[i-j])*(y3[i-k]);
-                     H[k][j]=H[j][k];
-                    }
-                }
-
+                H[k][j]=H[j][k];
             }
-    
-            
-            for (j = dB+dA; j < dB+dA+dC; j++)
+            for (k = 0; k < dA; k++)
             {
-                for (k = dB+dA; k < dB+dA+dC; k++)
-                {
-                    if( (i>=j) & (i>=k) ) 
-                    {
-                     H[j][k]+=(y3[i-j])*(y3[i-k]);
-                     H[k][j]=H[j][k];
-                    }
+                for (i = 0; i < du; i++)
+                {            
+                    H[j][k+dB]+=y1[i-j]*y2[i-k];
                 }
-
+                H[k+dB][j]=H[j][k+dB];
             }
-    
-        
+            for (k = 0; k < dC; k++)
+            {
+                for (i = 0; i < du; i++)
+                {            
+                    H[j][k+dB+dA]+=y1[i-j]*y3[i-k];
+                }
+                H[k+dB+dA][j]=H[j][k+dB+dA];
+            }
         }
+
+        for (j = 0; j < dA; j++)
+        {
+            for (k = j; k < dA; k++)
+            {
+                for (i = 0; i < du; i++)
+                {            
+                    H[j+dB][k+dB]+=y2[i-j]*y2[i-k];
+                }
+                H[k+dB][j+dB]=H[j+dB][k+dB];
+            }
+            for (k = 0; k < dC; k++)
+            {
+                for (i = 0; i < du; i++)
+                {            
+                    H[j+dB][k+dB+dA]+=y2[i-j]*y3[i-k];
+                }
+                H[k+dB+dA][j+dB]=H[j][k+dB+dA];
+            }
+        }
+        
+        for (j = 0; j < dC; j++)
+        {
+            for (k = j; k < dC; k++)
+            {
+                for (i = 0; i < du; i++)
+                {            
+                    H[j+dB+dA][k+dB+dA]+=y3[i-j]*y3[i-k];
+                }
+                H[k+dB+dA][j+dB+dA]=H[j+dB+dA][k+dB+dA];
+            }
+        }
+           
+        
 
     }
     

@@ -82,49 +82,49 @@ void grad(double* teta, double* J)
 
         for (j = 0; j < dteta; j++)
         {
-            for (k = j; k < dteta; k++)
+            for (k = 0; k < dteta; k++)
             {
                 H[j][k]=0;
             }
         }
         
-        for (i = 0; i < du; i++)
-        {            
-            for (j = 0; j < dnum; j++)
+         
+        
+        for (j = 0; j < dnum; j++)
+        {
+            for (k = j; k < dnum; k++)
             {
-                for (k = j; k < dnum; k++)
-                {
-                    if( (i>=j) & (i>=k) ) 
+                for (i = 0; i < du; i++)
+                {   
+                    if ((i>=j)&(i>=k))
                     {
-                        H[j][k]+=(y[i-k])*(y[i-j]);
-                        H[k][j]=H[j][k];
+                        H[j][k]+=y[i-j]*y[i-k];
                     }
                 }
-                for (k = dnum; k < dteta; k++)
-                {
-                    if( (i>=j) & (i>=k) ) 
-                    {
-                        H[j][k]+=(y[i-j])*(y2[i-k]);
-                        H[k][j]=H[j][k];
-                    }
-                }
+                H[k][j]=H[j][k];
             }
-        
-        
-            for (j = dnum; j < dteta; j++)
+            for (k = 0; k < dteta-dnum; k++)
             {
-                for (k = j; k < dteta; k++)
-                {
-                    if( (i>=j) & (i>=k) ) 
-                    {
-                     H[j][k]+=(y2[i-j])*(y2[i-k]);
-                     H[k][j]=H[j][k];
-                    }
+                for (i = 0; i < du; i++)
+                {            
+                    H[j][k+dnum]+=y[i-j]*y2[i-k];
                 }
+                H[k+dnum][j]=H[j][k+dnum];
             }
-        
-        
         }
+
+        for (j = 0; j < dteta-dnum; j++)
+        {
+            for (k = j; k < dteta-dnum; k++)
+            {
+                for (i = 0; i < du; i++)
+                {            
+                    H[j+dnum][k+dnum]+=y2[i-j]*y2[i-k];
+                }
+                H[k+dnum][j+dnum]=H[j+dnum][k+dnum];
+            }
+        }
+        
 
     }
     

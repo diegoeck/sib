@@ -116,7 +116,7 @@ void grad(double* teta, double* J)
               
         // Calcula gradiente com relacao a B
         filter(pD, pC, dD+1, dC+1, 0, u, du, y1);    
-        filter(p1, pA, 1, dA+1, 0, y1, du, y2);    
+        filter(p1, pA, 1, dA+1, delay, y1, du, y2);    
         for (j = 0; j < dB; j++)
         {
             gra[j]=0;
@@ -176,113 +176,111 @@ void grad(double* teta, double* J)
             }
         }
         
-        for (i = 0; i < du; i++)
-        {            
-            for (j = 0; j < dB; j++)
-            {
-                for (k = j; k < dB; k++)
-                {
-                    if( (i>=j) & (i>=k) ) 
-                    {
-                        H[j][k]+=(y2[i-k])*(y2[i-j]);
-                        H[k][j]=H[j][k];
-                    }
-                }
-                for (k = dB; k < dB+dA; k++)
-                {
-                    if( (i>=j) & (i>=k) ) 
-                    {
-                        H[j][k]+=(y2[i-k])*(y4[i-j]);
-                        H[k][j]=H[j][k];
-                    }
-                }
-
-                for (k = dB+dA; k < dB+dA+dC; k++)
-                {
-                    if( (i>=j) & (i>=k) ) 
-                    {
-                        H[j][k]+=(y2[i-j])*(y6[i-k]);
-                        H[k][j]=H[j][k];
-                    }
-                }
-                for (k = dB+dA+dC; k < dB+dA+dC+dD; k++)
-                {
-                    if( (i>=j) & (i>=k) ) 
-                    {
-                        H[j][k]+=(y2[i-j])*(y7[i-k]);
-                        H[k][j]=H[j][k];
-                    }
-                }
-
-            }
+         
         
-
-            for (j = dB; j < dB+dA; j++)
+        for (j = 0; j < dB; j++)
+        {
+            for (k = j; k < dB; k++)
             {
-                for (k = j; k < dB+dA; k++)
-                {
-                    if( (i>=j) & (i>=k) ) 
+                for (i = 0; i < du; i++)
+                {   
+                    if ((i>=j)&(i>=k))
                     {
-                        H[j][k]+=(y4[i-k])*(y4[i-j]);
-                        H[k][j]=H[j][k];
+                        H[j][k]+=y2[i-j]*y2[i-k];
                     }
                 }
-                for (k = dB+dA; k < dB+dA+dC; k++)
-                {
-                    if( (i>=j) & (i>=k) ) 
-                    {
-                        H[j][k]+=(y4[i-j])*(y6[i-k]);
-                        H[k][j]=H[j][k];
-                    }
-                }
-                for (k = dB+dA+dC; k < dB+dA+dC+dD; k++)
-                {
-                    if( (i>=j) & (i>=k) ) 
-                    {
-                        H[j][k]+=(y4[i-j])*(y7[i-k]);
-                        H[k][j]=H[j][k];
-                    }
-                }
-
+                H[k][j]=H[j][k];
             }
-            
-            for (j = dB+dA; j < dB+dA+dC; j++)
+            for (k = 0; k < dA; k++)
             {
-                for (k = j; k < dB+dA+dC; k++)
-                {
-                    if( (i>=j) & (i>=k) ) 
-                    {
-                     H[j][k]+=(y6[i-j])*(y6[i-k]);
-                     H[k][j]=H[j][k];
-                    }
+                for (i = 0; i < du; i++)
+                {            
+                    H[j][k+dB]+=y2[i-j]*y4[i-k];
                 }
-                for (k = dB+dA+dC; k < dB+dA+dC+dD; k++)
-                {
-                    if( (i>=j) & (i>=k) ) 
-                    {
-                     H[j][k]+=(y6[i-j])*(y7[i-k]);
-                     H[k][j]=H[j][k];
-                    }
-                }
-
+                H[k+dB][j]=H[j][k+dB];
             }
-    
-            
-            for (j = dB+dA+dC; j < dB+dA+dC+dD; j++)
+            for (k = 0; k < dC; k++)
             {
-                for (k = j; k < dB+dA+dC+dD; k++)
-                {
-                    if( (i>=j) & (i>=k) ) 
-                    {
-                     H[j][k]+=(y7[i-j])*(y7[i-k]);
-                     H[k][j]=H[j][k];
-                    }
+                for (i = 0; i < du; i++)
+                {            
+                    H[j][k+dB+dA]+=y2[i-j]*y6[i-k];
                 }
-
+                H[k+dB+dA][j]=H[j][k+dB+dA];
             }
-    
-        
+            for (k = 0; k < dD; k++)
+            {
+                for (i = 0; i < du; i++)
+                {            
+                    H[j][k+dB+dA+dC]+=y2[i-j]*y7[i-k];
+                }
+                H[k+dB+dA+dC][j]=H[j][k+dB+dA+dC];
+            }
         }
+
+        for (j = 0; j < dA; j++)
+        {
+            for (k = j; k < dA; k++)
+            {
+                for (i = 0; i < du; i++)
+                {            
+                    H[j+dB][k+dB]+=y4[i-j]*y4[i-k];
+                }
+                H[k+dB][j+dB]=H[j+dB][k+dB];
+            }
+            for (k = 0; k < dC; k++)
+            {
+                for (i = 0; i < du; i++)
+                {            
+                    H[j+dB][k+dB+dA]+=y4[i-j]*y6[i-k];
+                }
+                H[k+dB+dA][j+dB]=H[j][k+dB+dA];
+            }
+            for (k = 0; k < dD; k++)
+            {
+                for (i = 0; i < du; i++)
+                {            
+                    H[j+dB][k+dB+dA+dC]+=y4[i-j]*y7[i-k];
+                }
+                H[k+dB+dA+dC][j+dB]=H[j+dB][k+dB+dA+dC];
+            }
+        }
+        
+        for (j = 0; j < dC; j++)
+        {
+            for (k = j; k < dC; k++)
+            {
+                for (i = 0; i < du; i++)
+                {            
+                    H[j+dB+dA][k+dB+dA]+=y6[i-j]*y6[i-k];
+                }
+                H[k+dB+dA][j+dB+dA]=H[j+dB+dA][k+dB+dA];
+            }
+            for (k = 0; k < dD; k++)
+            {
+                for (i = 0; i < du; i++)
+                {            
+                    H[j+dB+dA][k+dB+dA+dC]+=y6[i-j]*y7[i-k];
+                }
+                H[k+dB+dA+dC][j+dB+dA]=H[j+dB+dA][k+dB+dA+dC];
+            }
+        }
+           
+        for (j = 0; j < dD; j++)
+        {
+            for (k = j; k < dD; k++)
+            {
+                for (i = 0; i < du; i++)
+                {            
+                    H[j+dB+dA+dC][k+dB+dA+dC]+=y7[i-j]*y7[i-k];
+                }
+                H[k+dB+dA+dC][j+dB+dA+dC]=H[j+dB+dA+dC][k+dB+dA+dC];
+            }
+        }
+        
+        
+    
+        
+        
 
     }
     
