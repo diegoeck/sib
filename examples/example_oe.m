@@ -8,7 +8,7 @@ H = tf([1], [1], 1);
 
 y = lsim(G,u) + lsim(H,randn(N,1));
 
-[theta, m] = sib_oe(u, y, 2, 2, 1)
+[theta, m] = sib_oe(u, y, 1, 1, 1)
 
 yp = sib_predict(u, y, m); 
 ys = sib_simulate(u, m); 

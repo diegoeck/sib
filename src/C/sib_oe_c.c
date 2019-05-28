@@ -107,7 +107,10 @@ void grad(double* teta, double* J)
             {
                 for (i = 0; i < du; i++)
                 {            
-                    H[j][k+dnum]+=y[i-j]*y2[i-k];
+                    if ((i>=j)&(i>=k))
+                    {
+                        H[j][k+dnum]+=y[i-j]*y2[i-k];
+                    }
                 }
                 H[k+dnum][j]=H[j][k+dnum];
             }
@@ -119,7 +122,10 @@ void grad(double* teta, double* J)
             {
                 for (i = 0; i < du; i++)
                 {            
-                    H[j+dnum][k+dnum]+=y2[i-j]*y2[i-k];
+                    if ((i>=j)&(i>=k))
+                    {
+                        H[j+dnum][k+dnum]+=y2[i-j]*y2[i-k];
+                    }
                 }
                 H[k+dnum][j+dnum]=H[j+dnum][k+dnum];
             }
@@ -166,9 +172,16 @@ void mexFunction(int nlhs, mxArray *plhs[ ],int nrhs, const mxArray *prhs[ ])
     plhs[0] = mxCreateDoubleMatrix(dteta,1,mxREAL);
     tetafim = mxGetPr(plhs[0]);
 
+    memcpy(tetafim,teta,sizeof(double) *dteta);
+
     sib_steepest(tetafim);
-    memcpy(teta,tetafim,sizeof(double) *dteta);
+    //memcpy(teta,tetafim,sizeof(double) *dteta);
     sib_newton(tetafim);
+    
+    free(gra);
+    free(H[0]);
+    free(H);
+
 } 
 
         

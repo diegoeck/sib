@@ -28,7 +28,7 @@ void grad(double* teta, double* J)
     // Calcula o gradiente da estrutura OE e o custo atual
     double *e;
     double *A;
-    double *y;
+    //double *y;
     double *y0;
     double *y1;
     double *y2;
@@ -64,7 +64,6 @@ void grad(double* teta, double* J)
     y7=malloc((du)*sizeof(double));
     e=malloc((du)*sizeof(double));
 
-    
     
     for (k = 0; k < dB; k++)
     {
@@ -110,7 +109,6 @@ void grad(double* teta, double* J)
     
     if(mode==1 | mode==2){
         
-          
         for (j = 0; j < dA+dB+dC+dD; j++)
         {
             gra[j]=0;
@@ -197,23 +195,32 @@ void grad(double* teta, double* J)
             {
                 for (i = 0; i < du; i++)
                 {            
-                    H[j][k+dB]+=y2[i-j]*y4[i-k];
+                    if ((i>=j)&(i>=k))
+                    {
+                        H[j][k+dB]+=y2[i-j]*y4[i-k];
+                    }
                 }
                 H[k+dB][j]=H[j][k+dB];
             }
             for (k = 0; k < dC; k++)
             {
                 for (i = 0; i < du; i++)
-                {            
-                    H[j][k+dB+dA]+=y2[i-j]*y6[i-k];
+                {
+                    if ((i>=j)&(i>=k))
+                    {
+                        H[j][k+dB+dA]+=y2[i-j]*y6[i-k];
+                    }
                 }
                 H[k+dB+dA][j]=H[j][k+dB+dA];
             }
             for (k = 0; k < dD; k++)
             {
                 for (i = 0; i < du; i++)
-                {            
-                    H[j][k+dB+dA+dC]+=y2[i-j]*y7[i-k];
+                {    
+                    if ((i>=j)&(i>=k))
+                    {
+                        H[j][k+dB+dA+dC]+=y2[i-j]*y7[i-k];
+                    }
                 }
                 H[k+dB+dA+dC][j]=H[j][k+dB+dA+dC];
             }
@@ -225,15 +232,21 @@ void grad(double* teta, double* J)
             {
                 for (i = 0; i < du; i++)
                 {            
-                    H[j+dB][k+dB]+=y4[i-j]*y4[i-k];
+                    if ((i>=j)&(i>=k))
+                    {
+                        H[j+dB][k+dB]+=y4[i-j]*y4[i-k];
+                    }
                 }
                 H[k+dB][j+dB]=H[j+dB][k+dB];
             }
             for (k = 0; k < dC; k++)
             {
                 for (i = 0; i < du; i++)
-                {            
-                    H[j+dB][k+dB+dA]+=y4[i-j]*y6[i-k];
+                {    
+                    if ((i>=j)&(i>=k))
+                    {
+                        H[j+dB][k+dB+dA]+=y4[i-j]*y6[i-k];
+                    }
                 }
                 H[k+dB+dA][j+dB]=H[j][k+dB+dA];
             }
@@ -241,7 +254,10 @@ void grad(double* teta, double* J)
             {
                 for (i = 0; i < du; i++)
                 {            
-                    H[j+dB][k+dB+dA+dC]+=y4[i-j]*y7[i-k];
+                    if ((i>=j)&(i>=k))
+                    {
+                        H[j+dB][k+dB+dA+dC]+=y4[i-j]*y7[i-k];
+                    }
                 }
                 H[k+dB+dA+dC][j+dB]=H[j+dB][k+dB+dA+dC];
             }
@@ -253,7 +269,10 @@ void grad(double* teta, double* J)
             {
                 for (i = 0; i < du; i++)
                 {            
-                    H[j+dB+dA][k+dB+dA]+=y6[i-j]*y6[i-k];
+                    if ((i>=j)&(i>=k))
+                    {
+                        H[j+dB+dA][k+dB+dA]+=y6[i-j]*y6[i-k];
+                    }
                 }
                 H[k+dB+dA][j+dB+dA]=H[j+dB+dA][k+dB+dA];
             }
@@ -261,7 +280,10 @@ void grad(double* teta, double* J)
             {
                 for (i = 0; i < du; i++)
                 {            
-                    H[j+dB+dA][k+dB+dA+dC]+=y6[i-j]*y7[i-k];
+                    if ((i>=j)&(i>=k))
+                    {
+                        H[j+dB+dA][k+dB+dA+dC]+=y6[i-j]*y7[i-k];
+                    }
                 }
                 H[k+dB+dA+dC][j+dB+dA]=H[j+dB+dA][k+dB+dA+dC];
             }
@@ -273,7 +295,10 @@ void grad(double* teta, double* J)
             {
                 for (i = 0; i < du; i++)
                 {            
-                    H[j+dB+dA+dC][k+dB+dA+dC]+=y7[i-j]*y7[i-k];
+                    if ((i>=j)&(i>=k))
+                    {
+                        H[j+dB+dA+dC][k+dB+dA+dC]+=y7[i-j]*y7[i-k];
+                    }
                 }
                 H[k+dB+dA+dC][j+dB+dA+dC]=H[j+dB+dA+dC][k+dB+dA+dC];
             }
@@ -286,7 +311,7 @@ void grad(double* teta, double* J)
 
     }
     
-    free(y);
+    //free(y);
     free(y0);
     free(y1);
     free(y2);
@@ -340,11 +365,13 @@ void mexFunction(int nlhs, mxArray *plhs[ ],int nrhs, const mxArray *prhs[ ])
 
     //mexPrintf("Teta %1.10f %1.10f %1.10f %1.10f\n",teta[0],teta[1],teta[2],teta[3]);
 
+    memcpy(tetafim,teta,sizeof(double) *dteta);
     sib_steepest(tetafim);
-    memcpy(teta,tetafim,sizeof(double) *dteta);
+    //memcpy(teta,tetafim,sizeof(double) *dteta);
     sib_newton(tetafim);
     
     free(gra);
+    free(H[0]);
     free(H);
 } 
 

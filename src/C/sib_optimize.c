@@ -31,7 +31,7 @@ void sib_steepest(double* tetafim)
     tetatemp=malloc((dteta)*sizeof(double));
     dir=malloc((dteta)*sizeof(double));
     
-    memcpy(tetafim,teta,sizeof(double) *dteta);
+    //memcpy(tetafim,teta,sizeof(double) *dteta);
 
     for(i=0; i<100; i++)
     {
@@ -131,8 +131,10 @@ void sib_newton(double* tetafim)
     ptrdiff_t Ns = dteta;
     ptrdiff_t Ms = 1;
     ptrdiff_t info = 0;
-    ptrdiff_t *ipiv;
-    ipiv=malloc((dteta)*sizeof(ptrdiff_t));
+    
+    char uplo[] = "U";
+    //ptrdiff_t *ipiv;
+    //ipiv=malloc((dteta)*sizeof(ptrdiff_t));
 
     //#endif
     
@@ -143,11 +145,12 @@ void sib_newton(double* tetafim)
 
     tetatemp=malloc((dteta)*sizeof(double));
 
-    memcpy(tetafim,teta,sizeof(double) *dteta);
+    //memcpy(tetafim,teta,sizeof(double) *dteta);
 
 
     for(i=0; i<100; i++)
     {
+
         mode=2;
         grad(tetafim,J1);
 
@@ -167,24 +170,28 @@ void sib_newton(double* tetafim)
 
         
         
-        dgesv(&Ns, &Ms, *H, &Ns, ipiv, gra, &Ns, &info);
+        //dgesv(&Ns, &Ms, *H, &Ns, ipiv, gra, &Ns, &info);
+        dposv(uplo, &Ns, &Ms, *H, &Ns, gra, &Ns, &info);
+
         //mexPrintf("depois %1.10f %1.10f %1.10f %1.10f\n",gra[0],gra[1],gra[2],gra[3]);
         
         //mexPrintf("info: %d\n", info);
 
-    
+    /*
         if (isnan(gra[0]))
         {
             break;
         }
+     */
         
         for (k = 0; k < dteta; k++)
         {
             tetatemp[k] = tetafim[k] - gra[k]*i/100;
         }
     
-        memcpy(tetafim,tetatemp,sizeof(double) *dteta);
+        // OR memcpy(tetafim,tetatemp,sizeof(double) *dteta);
         
+        /*
         for (j = 0; j < 10; j++)
         {
     
@@ -212,7 +219,7 @@ void sib_newton(double* tetafim)
             break;
         }
 
-        
+        */
         
         
         
@@ -238,7 +245,7 @@ void sib_newton(double* tetafim)
         
     }
 
-    free(ipiv);
+    //free(ipiv);
     free(tetatemp);
 
 }

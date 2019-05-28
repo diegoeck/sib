@@ -167,8 +167,11 @@ void grad(double* teta, double* J)
             for (k = 0; k < dA; k++)
             {
                 for (i = 0; i < du; i++)
-                {            
-                    H[j][k+dB]+=y1[i-j]*y2[i-k];
+                {   
+                    if ((i>=j)&(i>=k))
+                    {
+                        H[j][k+dB]+=y1[i-j]*y2[i-k];
+                    }
                 }
                 H[k+dB][j]=H[j][k+dB];
             }
@@ -176,7 +179,10 @@ void grad(double* teta, double* J)
             {
                 for (i = 0; i < du; i++)
                 {            
-                    H[j][k+dB+dA]+=y1[i-j]*y3[i-k];
+                    if ((i>=j)&(i>=k))
+                    {
+                        H[j][k+dB+dA]+=y1[i-j]*y3[i-k];
+                    }
                 }
                 H[k+dB+dA][j]=H[j][k+dB+dA];
             }
@@ -188,7 +194,10 @@ void grad(double* teta, double* J)
             {
                 for (i = 0; i < du; i++)
                 {            
-                    H[j+dB][k+dB]+=y2[i-j]*y2[i-k];
+                    if ((i>=j)&(i>=k))
+                    {
+                        H[j+dB][k+dB]+=y2[i-j]*y2[i-k];
+                    }
                 }
                 H[k+dB][j+dB]=H[j+dB][k+dB];
             }
@@ -196,7 +205,10 @@ void grad(double* teta, double* J)
             {
                 for (i = 0; i < du; i++)
                 {            
-                    H[j+dB][k+dB+dA]+=y2[i-j]*y3[i-k];
+                    if ((i>=j)&(i>=k))
+                    {
+                        H[j+dB][k+dB+dA]+=y2[i-j]*y3[i-k];
+                    }
                 }
                 H[k+dB+dA][j+dB]=H[j][k+dB+dA];
             }
@@ -208,7 +220,10 @@ void grad(double* teta, double* J)
             {
                 for (i = 0; i < du; i++)
                 {            
-                    H[j+dB+dA][k+dB+dA]+=y3[i-j]*y3[i-k];
+                    if ((i>=j)&(i>=k))
+                    {
+                        H[j+dB+dA][k+dB+dA]+=y3[i-j]*y3[i-k];
+                    }
                 }
                 H[k+dB+dA][j+dB+dA]=H[j+dB+dA][k+dB+dA];
             }
@@ -261,12 +276,13 @@ void mexFunction(int nlhs, mxArray *plhs[ ],int nrhs, const mxArray *prhs[ ])
 
     //mexPrintf(" %d %d %d %d  \n",dteta,dA,dB,dC);
 
-    
+    memcpy(tetafim,teta,sizeof(double) *dteta);
     sib_steepest(tetafim);
-    memcpy(teta,tetafim,sizeof(double) *dteta);
+    //memcpy(teta,tetafim,sizeof(double) *dteta);
     sib_newton(tetafim);
     
     free(gra);
+    free(H[0]);
     free(H);
 } 
 
