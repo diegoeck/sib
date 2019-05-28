@@ -44,6 +44,15 @@ void grad(double* teta, double* J)
     double *pD;
     
     int i,j,k;
+    
+    double p1[1]={1};
+    double p1n[1]={-1};
+    
+    pB=malloc( (dB)*sizeof(double) );
+    pA=malloc( (dA+1)*sizeof(double) );
+    pC=malloc( (dC+1)*sizeof(double) );
+    pD=malloc( (dD+1)*sizeof(double) );
+
 
     y0=malloc((du)*sizeof(double));
     y1=malloc((du)*sizeof(double));
@@ -56,13 +65,6 @@ void grad(double* teta, double* J)
     e=malloc((du)*sizeof(double));
 
     
-    
-    pB=malloc( (dB)*sizeof(double) );
-    pA=malloc( (dA+1)*sizeof(double) );
-    pC=malloc( (dC+1)*sizeof(double) );
-    pD=malloc( (dD+1)*sizeof(double) );
-    double p1[1]={1};
-    double p1n[1]={-1};
     
     for (k = 0; k < dB; k++)
     {
