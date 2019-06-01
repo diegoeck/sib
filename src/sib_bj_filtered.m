@@ -23,7 +23,8 @@ FF=[.1 .2 .3 .4 .5 .6 .7 .8 .9];
 
 theta0 = sib_arx(u, y, na, nb, nz);
 theta1 = [ theta0; zeros(nc,1) ];
-theta2 = sib_armax_c(u, y, theta1, na, nb, nc, nz);
+%theta2 = sib_armax_c(u, y, theta1, na, nb, nc, nz);
+theta2 = theta1;
 if (nd>na)
     D=[ theta2(nb+1:nb+na); zeros(nd-na,1) ];
 else

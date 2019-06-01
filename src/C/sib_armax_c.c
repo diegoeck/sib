@@ -26,14 +26,24 @@ void grad(double* teta, double* J)
 {
     // Calcula o gradiente da estrutura OE e o custo atual
     double *e;
-    double *A;
-    //double *y;
     double *y0;
     double *y1;
     double *y2;
     double *y3;
     int i,j,k;
 
+    double *pB;
+    double *pA;
+    double *pC;
+
+    double p1[1]={1};
+    double p1n[1]={-1};
+    
+    pB=malloc( (dB)*sizeof(double) );
+    pA=malloc( (dA+1)*sizeof(double) );
+    pC=malloc( (dC+1)*sizeof(double) );
+
+    
     y0=malloc((du)*sizeof(double));
     y1=malloc((du)*sizeof(double));
     y2=malloc((du)*sizeof(double));
@@ -41,33 +51,25 @@ void grad(double* teta, double* J)
     e=malloc((du)*sizeof(double));
 
     
-    //mexPrintf(" %f %f %f \n",teta[0],teta[1],teta[2]);
-    
-    A=malloc((dB+dC)*sizeof(double));
     for (k = 0; k < dB; k++)
     {
-        A[k]=teta[k];
+        pB[k]=teta[k];
     }
+    
+    pA[0] = 1;
+    for (k = 0; k < dA; k++)
+    {
+        pA[k+1]=teta[dB+k];
+    }
+
+    pC[0] = 1;
     for (k = 0; k < dC; k++)
     {
-        A[dB+k]=teta[dA+dB+k];
+        pC[k+1]=teta[dB+dA+k];
     }
     
-    
-
-    
-    filtra(A, dB, dC, delay, u, du, y0); 
-    free(A);
-    
-    
-    A=malloc((dA+dC+1)*sizeof(double));
-    A[0]=1;
-    for (k = 0; k < dA+dC; k++)
-    {
-        A[k+1]=teta[dB+k];
-    }
-    filtra(A, dA+1, dC, 0, ym, du, y1);    
-    free(A);
+    filter(pB, pC, dB, dC+1, delay, u, du, y0); 
+    filter(pA, pC, dA+1, dC+1, 0, ym, du, y1); 
     
     J[0]=0;
     for (k = 0; k < du; k++)
@@ -87,15 +89,8 @@ void grad(double* teta, double* J)
         }
         
         // Calcula gradiente com relacao a B
-        A=malloc((1+dC)*sizeof(double));
-        A[0]=1;
-        for (k = 0; k < dC; k++)
-        {
-            A[k+1]=teta[dA+dB+k];
-        }
-        filtra(A, 1, dC, delay, u, du, y1);
         
-
+        filter(p1, pC, 1, dC+1, delay, u, du, y1); 
         for (j = 0; j < dB; j++)
         {
             gra[j]=0;
@@ -106,8 +101,7 @@ void grad(double* teta, double* J)
         }
 
         // Calcula gradiente com relacao a A
-        A[0]=-1;
-        filtra(A, 1, dC, 1, ym, du, y2);
+        filter(p1n, pC, 1, dC+1, 1, ym, du, y2); 
         for (j = 0; j < dA; j++)
         {
             gra[dB+j]=0;
@@ -117,9 +111,8 @@ void grad(double* teta, double* J)
             }
         }
         
-        
         // Calcula gradiente com relacao a C
-        filtra(A, 1, dC, 1, e, du, y3);
+        filter(p1n, pC, 1, dC+1, 1, e, du, y3); 
         for (j = 0; j < dC; j++)
         {
             gra[dA+dB+j]=0;
@@ -129,17 +122,10 @@ void grad(double* teta, double* J)
             }
         }
         
-        //mexPrintf(" %f %f %f \n",gra[0],gra[1],gra[2]);
-
-        
-        free(A);
-
     }
     
     if(mode==2)
     {
-
-        
     
         for (j = 0; j < dteta; j++)
         {
@@ -210,7 +196,7 @@ void grad(double* teta, double* J)
                         H[j+dB][k+dB+dA]+=y2[i-j]*y3[i-k];
                     }
                 }
-                H[k+dB+dA][j+dB]=H[j][k+dB+dA];
+                H[k+dB+dA][j+dB]=H[j+dB][k+dB+dA];
             }
         }
         
@@ -233,12 +219,15 @@ void grad(double* teta, double* J)
 
     }
     
-    //free(y);
     free(y0);
     free(y1);
     free(y2);
     free(y3);
     free(e);
+
+    free(pA);
+    free(pB);
+    free(pC);
 
 }
 
