@@ -15,7 +15,7 @@ function [theta3, m] = sib_armax_filtered(u, y, na, nb, nc, nz);
 %         nc = number of parameter in polynomial C(z) = 1 + c_1 z^-1 + c_2 z^-2 + ... + c_nc z^-nc       
 %         nz = input delay
 %
-% Output : theta = [ b_1 b_2 ... b_nb a_1 a_2 ... a_na c_1 c_2 ... c_nc]'
+% Output : theta = [ a_1 a_2 ... a_na b_1 b_2 ... b_nb c_1 c_2 ... c_nc]'
 %          m = struct with model polynomials 
 
 FF=[.1 .2 .3 .4 .5 .6 .7 .8 .9];
@@ -40,9 +40,9 @@ end
 %Estimate with real data
 theta3 = sib_armax_c(u, y, theta2, na, nb, nc, nz);
 
-m.A = [ 1; theta3(nb+1:nb+na) ];
-m.B = [ zeros(nz,1); theta3(1:nb) ];
-m.C = [ 1; theta3(nb+na+1:nb+na+nc) ];
+m.A = [ 1; theta3(1:na) ];
+m.B = [ zeros(nz,1); theta3(na+1:na+nb) ];
+m.C = [ 1; theta3(na+nb+1:na+nb+nc) ];
 m.D = 1;
 m.F = 1;
 

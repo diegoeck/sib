@@ -87,7 +87,7 @@ void sib_steepest(double* tetafim)
         {
             mexPrintf("-");
         }
-        mexPrintf(" %02d%% %1.10f %1.10f \n",i,J1[0],passo);
+        mexPrintf(" %03d%% %1.10f %1.10f \n", i+1, J1[0], passo);
         
         if (utIsInterruptPending()) {       
             mexPrintf("Ctrl-C Detected. END\n\n");
@@ -186,7 +186,7 @@ void sib_newton(double* tetafim)
         
         for (k = 0; k < dteta; k++)
         {
-            tetatemp[k] = tetafim[k] - gra[k]*i/100;
+            tetatemp[k] = tetafim[k] - gra[k]*(i+1)/100;
         }
     
         memcpy(tetafim,tetatemp,sizeof(double) *dteta);
@@ -232,7 +232,7 @@ void sib_newton(double* tetafim)
         {
             mexPrintf("-");
         }
-        mexPrintf(" %02d%% %1.10f %1.10f \n", i, J1[0], ((float)i)/100.0);
+        mexPrintf(" %03d%% %1.10f %1.10f \n", i+1, J1[0], ((float)i+1)/100.0);
         
         
         

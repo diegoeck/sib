@@ -16,32 +16,32 @@ double *gra;
 
 int du;
 int dteta;
-int dA;
 int dB;
 int dC;
 int dD;
+int dF;
 int delay;
 int mode;
 
 void grad(double* teta, double* J)
 {
-    // Calcula o gradiente da estrutura OE e o custo atual
+    // Calcula o gradiente dF estrutura OE e o custo atual
     double *e;
     double *A;
     //double *y;
     double *y0;
     double *y1;
-    double *y2;
+    double *dydB;
     double *y3;
-    double *y4;
+    double *dydC;
     double *y5;
-    double *y6;
-    double *y7;
+    double *dydD;
+    double *dydF;
 
-    double *pA;
     double *pB;
     double *pC;
     double *pD;
+    double *pF;
     
     int i,j,k;
     
@@ -49,20 +49,21 @@ void grad(double* teta, double* J)
     double p1n[1]={-1};
     
     pB=malloc( (dB)*sizeof(double) );
-    pA=malloc( (dA+1)*sizeof(double) );
     pC=malloc( (dC+1)*sizeof(double) );
     pD=malloc( (dD+1)*sizeof(double) );
+    pF=malloc( (dF+1)*sizeof(double) );
 
 
+    e=malloc((du)*sizeof(double));
     y0=malloc((du)*sizeof(double));
     y1=malloc((du)*sizeof(double));
-    y2=malloc((du)*sizeof(double));
     y3=malloc((du)*sizeof(double));
-    y4=malloc((du)*sizeof(double));
     y5=malloc((du)*sizeof(double));
-    y6=malloc((du)*sizeof(double));
-    y7=malloc((du)*sizeof(double));
-    e=malloc((du)*sizeof(double));
+
+    dydB=malloc((du)*sizeof(double));
+    dydC=malloc((du)*sizeof(double));
+    dydD=malloc((du)*sizeof(double));
+    dydF=malloc((du)*sizeof(double));
 
     
     for (k = 0; k < dB; k++)
@@ -70,26 +71,26 @@ void grad(double* teta, double* J)
         pB[k]=teta[k];
     }
     
-    pA[0] = 1;
-    for (k = 0; k < dA; k++)
-    {
-        pA[k+1]=teta[dB+k];
-    }
-
     pC[0] = 1;
     for (k = 0; k < dC; k++)
     {
-        pC[k+1]=teta[dB+dA+k];
+        pC[k+1]=teta[dB+k];
     }
 
     pD[0] = 1;
     for (k = 0; k < dD; k++)
     {
-        pD[k+1]=teta[dB+dA+dC+k];
+        pD[k+1]=teta[dB+dC+k];
     }
     
-        
-    filter(pB, pA, dB, dA+1, delay, u, du, y0); 
+    pF[0] = 1;
+    for (k = 0; k < dF; k++)
+    {
+        pF[k+1]=teta[dB+dC+dD+k];
+    }
+
+    
+    filter(pB, pF, dB, dF+1, delay, u, du, y0); 
 
     for (k = 0; k < du; k++)
     {
@@ -104,65 +105,66 @@ void grad(double* teta, double* J)
         e[k]=(y1[k]);
         J[0]+=(e[k])*(e[k]);
     }
+    J[0] = sqrt(J[0]/du);
 
     
     
     if(mode==1 | mode==2){
         
-        for (j = 0; j < dA+dB+dC+dD; j++)
+        for (j = 0; j < dF+dB+dC+dD; j++)
         {
             gra[j]=0;
         }
               
         // Calcula gradiente com relacao a B
         filter(pD, pC, dD+1, dC+1, 0, u, du, y1);    
-        filter(p1, pA, 1, dA+1, delay, y1, du, y2);    
+        filter(p1, pF, 1, dF+1, delay, y1, du, dydB);    
         for (j = 0; j < dB; j++)
         {
             gra[j]=0;
             for (k = j; k < du; k++)
             {
-                gra[j]+=(e[k])*(y2[k-j]);
+                gra[j]+=(e[k])*(dydB[k-j]);
             }
         }
-
-        // Calcula gradiente com relacao a A
-        filter(pB, pA, dB, dA+1, delay, y1, du, y3);    
-        filter(p1n, pA, 1, dA+1, 1, y3, du, y4);    
-        for (j = 0; j < dA; j++)
+        
+        // Calcula gradiente com relacao a C
+        filter(pD, pC, dD+1, dC+1, 0, y0, du, y5);    
+        filter(p1n, pC, 1, dC+1, 1, y5, du, dydC);    
+        
+        for (j = 0; j < dC; j++)
         {
             gra[dB+j]=0;
             for (k = j; k < du; k++)
             {
-                gra[dB+j]+=(e[k])*(y4[k-j]);
-            }
-        }
-        
-        
-        // Calcula gradiente com relacao a C
-        filter(pD, pC, dD+1, dC+1, 0, y0, du, y5);    
-        filter(p1n, pC, 1, dC+1, 1, y5, du, y6);    
-        
-        for (j = 0; j < dC; j++)
-        {
-            gra[dA+dB+j]=0;
-            for (k = j; k < du; k++)
-            {
-                gra[dA+dB+j]+=(e[k])*(y6[k-j]);
+                gra[dB+j]+=(e[k])*(dydC[k-j]);
             }
         }
         
         // Calcula gradiente com relacao a D
-        filter(p1, pC, 1, dC+1, 1, y0, du, y7);    
+        filter(p1, pC, 1, dC+1, 1, y0, du, dydD);    
         for (j = 0; j < dD; j++)
         {
-            gra[dA+dB+dC+j]=0;
+            gra[dB+dC+j]=0;
             for (k = j; k < du; k++)
             {
-                gra[dA+dB+dC+j]+=(e[k])*(y7[k-j]);
+                gra[dB+dC+j]+=(e[k])*(dydD[k-j]);
             }
         }
 
+        // Calcula gradiente com relacao a F
+        filter(pB, pF, dB, dF+1, delay, y1, du, y3);    
+        filter(p1n, pF, 1, dF+1, 1, y3, du, dydF);    
+        for (j = 0; j < dF; j++)
+        {
+            gra[dB+dC+dD+j]=0;
+            for (k = j; k < du; k++)
+            {
+                gra[dB+dC+dD+j]+=(e[k])*(dydF[k-j]);
+            }
+        }
+
+        
     }
     
     if(mode==2)
@@ -186,83 +188,46 @@ void grad(double* teta, double* J)
                 {   
                     if ((i>=j)&(i>=k))
                     {
-                        H[j][k]+=y2[i-j]*y2[i-k];
+                        H[j][k] += dydB[i-j]*dydB[i-k];
                     }
                 }
                 H[k][j]=H[j][k];
             }
-            for (k = 0; k < dA; k++)
+            for (k = 0; k < dC; k++)
             {
                 for (i = 0; i < du; i++)
                 {            
                     if ((i>=j)&(i>=k))
                     {
-                        H[j][k+dB]+=y2[i-j]*y4[i-k];
+                        H[j][dB+k] += dydB[i-j]*dydC[i-k];
                     }
                 }
-                H[k+dB][j]=H[j][k+dB];
+                H[dB+k][j] = H[j][dB+k];
             }
-            for (k = 0; k < dC; k++)
+            for (k = 0; k < dD; k++)
             {
                 for (i = 0; i < du; i++)
                 {
                     if ((i>=j)&(i>=k))
                     {
-                        H[j][k+dB+dA]+=y2[i-j]*y6[i-k];
+                        H[j][dB+dC+k] += dydB[i-j]*dydD[i-k];
                     }
                 }
-                H[k+dB+dA][j]=H[j][k+dB+dA];
+                H[dB+dC+k][j]=H[j][dB+dC+k];
             }
-            for (k = 0; k < dD; k++)
+            for (k = 0; k < dF; k++)
             {
                 for (i = 0; i < du; i++)
                 {    
                     if ((i>=j)&(i>=k))
                     {
-                        H[j][k+dB+dA+dC]+=y2[i-j]*y7[i-k];
+                        H[j][dB+dC+dD+k] += dydB[i-j]*dydF[i-k];
                     }
                 }
-                H[k+dB+dA+dC][j]=H[j][k+dB+dA+dC];
+                H[dB+dC+dD+k][j] = H[j][dB+dC+dD+k];
             }
         }
 
-        for (j = 0; j < dA; j++)
-        {
-            for (k = j; k < dA; k++)
-            {
-                for (i = 0; i < du; i++)
-                {            
-                    if ((i>=j)&(i>=k))
-                    {
-                        H[j+dB][k+dB]+=y4[i-j]*y4[i-k];
-                    }
-                }
-                H[k+dB][j+dB]=H[j+dB][k+dB];
-            }
-            for (k = 0; k < dC; k++)
-            {
-                for (i = 0; i < du; i++)
-                {    
-                    if ((i>=j)&(i>=k))
-                    {
-                        H[j+dB][k+dB+dA]+=y4[i-j]*y6[i-k];
-                    }
-                }
-                H[k+dB+dA][j+dB]=H[j+dB][k+dB+dA];
-            }
-            for (k = 0; k < dD; k++)
-            {
-                for (i = 0; i < du; i++)
-                {            
-                    if ((i>=j)&(i>=k))
-                    {
-                        H[j+dB][k+dB+dA+dC]+=y4[i-j]*y7[i-k];
-                    }
-                }
-                H[k+dB+dA+dC][j+dB]=H[j+dB][k+dB+dA+dC];
-            }
-        }
-        
         for (j = 0; j < dC; j++)
         {
             for (k = j; k < dC; k++)
@@ -271,24 +236,35 @@ void grad(double* teta, double* J)
                 {            
                     if ((i>=j)&(i>=k))
                     {
-                        H[j+dB+dA][k+dB+dA]+=y6[i-j]*y6[i-k];
+                        H[dB+j][dB+k]+=dydC[i-j]*dydC[i-k];
                     }
                 }
-                H[k+dB+dA][j+dB+dA]=H[j+dB+dA][k+dB+dA];
+                H[dB+k][dB+j]=H[dB+j][dB+k];
             }
             for (k = 0; k < dD; k++)
+            {
+                for (i = 0; i < du; i++)
+                {    
+                    if ((i>=j)&(i>=k))
+                    {
+                        H[dB+j][dB+dC+k] += dydC[i-j]*dydD[i-k];
+                    }
+                }
+                H[dB+dC+k][dB+j] = H[dB+j][dB+dC+k];
+            }
+            for (k = 0; k < dF; k++)
             {
                 for (i = 0; i < du; i++)
                 {            
                     if ((i>=j)&(i>=k))
                     {
-                        H[j+dB+dA][k+dB+dA+dC]+=y6[i-j]*y7[i-k];
+                        H[dB+j][dB+dC+dD+k] += dydC[i-j]*dydF[i-k];
                     }
                 }
-                H[k+dB+dA+dC][j+dB+dA]=H[j+dB+dA][k+dB+dA+dC];
+                H[dB+dC+dD+k][dB+j]=H[dB+j][dB+dC+dD+k];
             }
         }
-           
+        
         for (j = 0; j < dD; j++)
         {
             for (k = j; k < dD; k++)
@@ -297,10 +273,36 @@ void grad(double* teta, double* J)
                 {            
                     if ((i>=j)&(i>=k))
                     {
-                        H[j+dB+dA+dC][k+dB+dA+dC]+=y7[i-j]*y7[i-k];
+                        H[dB+dC+j][dB+dC+k]+=dydD[i-j]*dydD[i-k];
                     }
                 }
-                H[k+dB+dA+dC][j+dB+dA+dC]=H[j+dB+dA+dC][k+dB+dA+dC];
+                H[dB+dC+k][dB+dC+j]=H[dB+dC+j][dB+dC+k];
+            }
+            for (k = 0; k < dF; k++)
+            {
+                for (i = 0; i < du; i++)
+                {            
+                    if ((i>=j)&(i>=k))
+                    {
+                        H[dB+dC+j][dB+dC+dD+k] += dydD[i-j]*dydF[i-k];
+                    }
+                }
+                H[dB+dC+dD+k][dB+dC+j] = H[dB+dC+j][dB+dC+dD+k];
+            }
+        }
+           
+        for (j = 0; j < dF; j++)
+        {
+            for (k = j; k < dF; k++)
+            {
+                for (i = 0; i < du; i++)
+                {            
+                    if ((i>=j)&(i>=k))
+                    {
+                        H[dB+dC+dD+j][dB+dC+dD+k]+=dydF[i-j]*dydF[i-k];
+                    }
+                }
+                H[dB+dC+dD+k][dB+dC+dD+j]=H[dB+dC+dD+j][dB+dC+dD+k];
             }
         }
         
@@ -311,20 +313,21 @@ void grad(double* teta, double* J)
 
     }
     
+    free(e);
     free(y0);
     free(y1);
-    free(y2);
     free(y3);
-    free(y4);
     free(y5);
-    free(y6);
-    free(y7);
-    free(e);
+    free(dydB);
+    free(dydC);
+    free(dydD);
+    free(dydF);
 
-    free(pA);
     free(pB);
     free(pC);
     free(pD);
+    free(pF);
+
 }
 
 
@@ -341,36 +344,38 @@ void mexFunction(int nlhs, mxArray *plhs[ ],int nrhs, const mxArray *prhs[ ])
     u = mxGetPr(prhs[0]);
     ym = mxGetPr(prhs[1]);
     teta = mxGetPr(prhs[2]);
-    dA = *mxGetPr(prhs[3]);
-    dB = *mxGetPr(prhs[4]);
-    dC = *mxGetPr(prhs[5]);
-    dD = *mxGetPr(prhs[6]);
+    dB = *mxGetPr(prhs[3]);
+    dC = *mxGetPr(prhs[4]);
+    dD = *mxGetPr(prhs[5]);
+    dF = *mxGetPr(prhs[6]);
     delay = *mxGetPr(prhs[7]);
     
+    if (dteta == dB+dC+dD+dF)
+    {
+
+        gra=malloc((dteta)*sizeof(double));
+        H = malloc(dteta * sizeof(double *));
+        H[0] = malloc(dteta * dteta * sizeof(double));
+        for(i = 1; i < dteta; i++)
+            H[i] = H[0] + i * dteta;
+
+        plhs[0] = mxCreateDoubleMatrix(dteta,1,mxREAL);
+        tetafim = mxGetPr(plhs[0]);
+
+        memcpy(tetafim,teta,sizeof(double) *dteta);
+        sib_steepest(tetafim);
+        sib_newton(tetafim);
     
-
-    gra=malloc((dteta)*sizeof(double));
-
-    H = malloc(dteta * sizeof(double *));
-    H[0] = malloc(dteta * dteta * sizeof(double));
-    for(i = 1; i < dteta; i++)
-        H[i] = H[0] + i * dteta;
-
-
-    plhs[0] = mxCreateDoubleMatrix(dteta,1,mxREAL);
-    tetafim = mxGetPr(plhs[0]);
-
-    //mexPrintf(" %d %d %d %d  \n",dteta,dA,dB,dC);
-
-    //mexPrintf("Teta %1.10f %1.10f %1.10f %1.10f\n",teta[0],teta[1],teta[2],teta[3]);
-
-    memcpy(tetafim,teta,sizeof(double) *dteta);
-    sib_steepest(tetafim);
-    sib_newton(tetafim);
-    
-    free(gra);
-    free(H[0]);
-    free(H);
+        free(gra);
+        free(H[0]);
+        free(H);
+    }else{
+        plhs[0] = mxCreateDoubleMatrix(1, 1, mxREAL);
+        tetafim = mxGetPr(plhs[0]);
+        tetafim = 0;
+        
+        mexPrintf("ERROR: Length of theta should be nb+nc+nd+nf !!! \n");
+    }
 } 
 
         

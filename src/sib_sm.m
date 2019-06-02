@@ -1,5 +1,5 @@
-function [theta, m] = sib_sm(u, y, nf, nb, nz)
-%  [theta, m] = sib_sm(u, y, nf, nb, nz)
+function [theta2, m] = sib_sm(u, y, nb, nf, nz)
+%  [theta, m] = sib_sm(u, y, nb, nf, nz)
 %
 %  Stieglitz-McBride Method
 %
@@ -16,19 +16,21 @@ function [theta, m] = sib_sm(u, y, nf, nb, nz)
 % Output : theta = [ b_1 b_2 ... b_nb f_1 f_2 ... f_nf ]'
 %          m = struct with model polynomials 
 
-theta = sib_arx(u, y, nf, nb, nz);
+theta1 = sib_arx(u, y, nf, nb, nz);
 
-for i=1:10
-    uf = filter(1, [ 1; theta(nb+1:nb+nf) ]', u);
-    yf = filter(1, [ 1; theta(nb+1:nb+nf) ]', y);
-    theta = sib_arx(uf, yf, nf, nb, nz);
+for i=1:100
+    uf = filter(1, [ 1; theta1(1:nf) ]', u);
+    yf = filter(1, [ 1; theta1(1:nf) ]', y);
+    theta1 = sib_arx(uf, yf, nf, nb, nz);
 end
 
+theta2 = [ theta1(nf+1:end); theta1(1:nf) ];
+
 m.A = 1;
-m.B = [ zeros(nz,1); theta(1:nb) ];
+m.B = [ zeros(nz,1); theta1(nf+1:end) ];
 m.C = 1;
 m.D = 1;
-m.F = [ 1; theta(nb+1:end) ];
+m.F = [ 1; theta1(1:nf) ];
 
 
 

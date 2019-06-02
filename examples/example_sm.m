@@ -3,7 +3,7 @@ clear all
 
 N = 100;
 u = square((1:N)*(2*pi)/100)';
-G = tf([0 1], [1 -0.9], 1);
+G = tf([0 1], poly([0.9]), 1);
 H = tf([1], [1], 1);
 
 y = lsim(G,u) + lsim(H,randn(N,1));
