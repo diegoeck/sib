@@ -17,19 +17,36 @@ function [theta2, m] = sib_oe_filtered(u, y, nb, nf, nz);
 % Output : theta = [ b_1 b_2 ... b_nb f_1 f_2 ... f_nf ]'
 %          m = struct with model polynomials 
 
-FF=[.1 .2 .3 .4 .5 .6 .7 .8 .9];
+%FF=[.1 .2 .3 .4 .5 .6 .7 .8 .9];
+FF=[.9 .8 .7 .6 .5 .4 .3 .2 .1]*40
 
-theta0 = sib_arx(u,y,nf,nb,nz);
+FF=exp(log(0.05)./FF)
+
+%yf = filter([1-2*FF(1)+FF(1)^2 0 0], [1 -2*FF(1) FF(1)^2], y);
+%uf = filter([1-2*FF(1)+FF(1)^2 0 0], [1 -2*FF(1) FF(1)^2], u);  
+
+yf = filter([1-FF(1)], [1 -FF(1)], y);
+uf = filter([1-FF(1)], [1 -FF(1)], u);  
+
+
+theta0 = sib_arx(uf,yf,nf,nb,nz)
 theta1 = [ theta0(nb+1:nb+nf); theta0(1:nb) ];
 
 
 for i = 1:length(FF)
 
     %Filter the data
-    [fb,fa] = butter(1,FF(i));
-    yf = filter(fb, fa, y);
-    uf = filter(fb, fa, u);  
+    %[fb,fa] = butter(1,FF(i));
+    %yf = filter(fb, fa, y);
+    %uf = filter(fb, fa, u);  
 
+%    yf = filter([1-2*FF(i)+FF(i)^2 0 0], [1 -2*FF(i) FF(i)^2], y);
+%    uf = filter([1-2*FF(i)+FF(i)^2 0 0], [1 -2*FF(i) FF(i)^2], u);  
+
+    yf = filter([1-FF(i)], [1 -FF(i)], y);
+    uf = filter([1-FF(i)], [1 -FF(i)], u);  
+    
+    
     %Estimate with filtered data
     theta2 = sib_oe_c(uf, yf, theta1, nb, nf, nz) ;
     theta1 = theta2;
