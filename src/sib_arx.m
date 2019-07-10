@@ -27,7 +27,9 @@ for i = 1+nz:nb+nz
     
 end
 
-theta = phi\y;
+retirar=max(na,nb+nz-1); %Remove ZEROS iniciais
+
+theta = phi(retirar:end,:)\y(retirar:end);
 
 m.A = [ 1; theta(1:na) ];
 m.B = [ zeros(nz,1); theta(na+1:end) ];
