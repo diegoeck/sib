@@ -33,12 +33,12 @@ void sib_steepest(double* tetafim)
     
     //memcpy(tetafim,teta,sizeof(double) *dteta);
 
-    for(i=0; i<100; i++)
+    for(i=1; i<=100; i++)
     {
 
         
 
-        for(j=0; j<100; j++)
+        for(j=1; j<=100; j++)
         {   
             mode=1;
             grad(tetafim,J1);
@@ -46,7 +46,7 @@ void sib_steepest(double* tetafim)
             //mexPrintf("T %1.10f %1.10f %1.10f %1.10f\n",tetafim[0],tetafim[1],tetafim[2],tetafim[3]);
             //mexPrintf("G %1.10f %1.10f %1.10f %1.10f\n",gra[0],gra[1],gra[2],gra[3]);
 
-            if((i==0)&(j==0))
+            if((i==1)&(j==1))
             {
                 memcpy(dir,gra,sizeof(double)*dteta);
             }
@@ -79,16 +79,16 @@ void sib_steepest(double* tetafim)
     
         
         mexPrintf("G: ");
-        for (k = 0; k < (int)floor(i/5); k++)
+        for (k = 0; k < i/5; k++)
         {
             mexPrintf("#");
         }
-        for (k = (int)floor(i/5); k < 20; k++)
+        for (k = i/5; k < 20; k++)
         {
             mexPrintf("-");
         }
-        mexPrintf(" %03d%% %1.10f %1.10f \n", i+1, J1[0], passo);
-        
+        mexPrintf(" %03d%% %1.10f %1.10f \n", i, J1[0], passo);
+
         if (utIsInterruptPending()) {       
             mexPrintf("Ctrl-C Detected. END\n\n");
             return;
@@ -148,7 +148,7 @@ void sib_newton(double* tetafim)
     //memcpy(tetafim,teta,sizeof(double) *dteta);
 
 
-    for(i=0; i<100; i++)
+    for(i=1; i<=1000; i++)
     {
 
         mode=2;
@@ -186,7 +186,7 @@ void sib_newton(double* tetafim)
         
         for (k = 0; k < dteta; k++)
         {
-            tetatemp[k] = tetafim[k] - gra[k]*(i+1)/100;
+            tetatemp[k] = tetafim[k] - gra[k]*(i+1)/1000;
         }
     
         //memcpy(tetafim,tetatemp,sizeof(double) *dteta);
@@ -222,17 +222,19 @@ void sib_newton(double* tetafim)
         
         
         
-        
-        mexPrintf("N: ");
-        for (k = 0; k < (int)floor(i/5); k++)
+        if (i%10==0)
         {
-            mexPrintf("#");
+            mexPrintf("N: ");
+            for (k = 0; k < (i/50); k++)
+            {
+                mexPrintf("#");
+            }
+            for (k = (i/50); k < 20; k++)
+            {
+                mexPrintf("-");
+            }
+            mexPrintf(" %03d%% %1.10f %1.10f \n", i/10, J1[0], ((float)i)/1000.0);
         }
-        for (k = (int)floor(i/5); k < 20; k++)
-        {
-            mexPrintf("-");
-        }
-        mexPrintf(" %03d%% %1.10f %1.10f \n", i+1, J1[0], ((float)i+1)/100.0);
         
         
         
