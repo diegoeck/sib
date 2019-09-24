@@ -1,5 +1,5 @@
 function [theta2, m] = sib_oe_filtered(u, y, nb, nf, nz);
-%  [theta, m] = sib_oe_filtered(u, y, nf, nb, nz)
+%  [theta, m] = sib_oe_filtered(u, y, nb, nf, nz)
 %
 %  Prediciton error method with OE structure
 %  Improved filtered version with better convergence
