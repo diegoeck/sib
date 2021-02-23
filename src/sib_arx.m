@@ -27,7 +27,7 @@ for i = 1+nz:nb+nz
     
 end
 
-retirar=max(na,nb+nz-1); %Remove ZEROS iniciais
+retirar= 1 + max(na,nb+nz-1); %Remove ZEROS iniciais
 
 theta = phi(retirar:end,:)\y(retirar:end);
 
